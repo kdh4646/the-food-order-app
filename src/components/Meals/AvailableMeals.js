@@ -6,6 +6,7 @@ import MealItem from "./MealIem/MealItem";
 
 const AvailableMeals = (props) => {
   const [meals, setMeals] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   //Include Http Request, useEffect() => Can't return promise
   useEffect(() => {
@@ -32,10 +33,20 @@ const AvailableMeals = (props) => {
 
       //set Meals
       setMeals(loadedMeals);
+      setIsLoading(false);
     };
 
     fetchMeals();
   }, []);
+
+  //loading
+  if (isLoading) {
+    return (
+      <section className={classes.MealsLoading}>
+        <p>Loading...</p>
+      </section>
+    );
+  }
 
   //helper variable
   const mealsList = meals.map((meal) => (
