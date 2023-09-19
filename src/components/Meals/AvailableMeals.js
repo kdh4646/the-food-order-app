@@ -7,6 +7,7 @@ import MealItem from "./MealIem/MealItem";
 const AvailableMeals = (props) => {
   const [meals, setMeals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [httpError, setHttpError] = useState();
 
   //Include Http Request, useEffect() => Can't return promise
   useEffect(() => {
@@ -15,6 +16,11 @@ const AvailableMeals = (props) => {
       const response = await fetch(
         "https://react-http-25d42-default-rtdb.firebaseio.com/meals.json"
       );
+
+      //error check
+      if (!response.ok) {
+        throw new Error("Somethinig went wrong");
+      }
 
       //data in JSON
       const responseData = await response.json();
@@ -36,7 +42,11 @@ const AvailableMeals = (props) => {
       setIsLoading(false);
     };
 
-    fetchMeals();
+    //only way to handle error inside promise
+    fetchMeals().catch((error) => {
+      setIsLoading(false);
+      setHttpError(error.message);
+    });
   }, []);
 
   //loading
@@ -44,6 +54,15 @@ const AvailableMeals = (props) => {
     return (
       <section className={classes.MealsLoading}>
         <p>Loading...</p>
+      </section>
+    );
+  }
+
+  //error control
+  if (httpError) {
+    return (
+      <section className={classes.MealsError}>
+        <p>{httpError}</p>
       </section>
     );
   }
